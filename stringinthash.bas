@@ -12,7 +12,7 @@ CONST StringLength = 8
 CONST INTEGERARRAYLENGTH = IntegerLength * BUCKETSIZE
 CONST STRINGARRAYLENGTH = StringLength * BUCKETSIZE
 
-DEFSTR S 'variables starting with z are strings
+DEFSTR S'variables starting with s are strings
 TYPE StringIntHashTable
   'dim for BUCKETSIZE amount of integers
   Values AS STRING * INTEGERARRAYLENGTH
@@ -22,7 +22,7 @@ TYPE StringIntHashTable
   Size AS INTEGER
 END TYPE
 REDIM SHARED table(1 TO TABLESIZE) AS StringIntHashTable
-'REDIM SHARED table(asd%) AS StringIntHashTable     dynamic? kind of
+'REDIM SHARED table(asd%) AS StringIntHashTable     dynamic? i think it can be done TODO make dynamic
 ''''''''''''''''''' END HEADER'''''''''''''''''''''
 
 '''''''''''''' EXAMPLE CODE'''''''''''''
@@ -87,7 +87,6 @@ FUNCTION HashGetInt% (sKey)
     END IF
   NEXT index
 END FUNCTION
-
 
 FUNCTION GetHash% (key$)
   FOR i = 1 TO LEN(key$)
