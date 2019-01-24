@@ -1,0 +1,55 @@
+TYPE Node
+  nodeValue AS INTEGER
+  nodeCounter AS INTEGER
+END TYPE
+
+CONST numnodes = 953
+DIM SHARED numbers(numnodes) AS INTEGER
+DIM SHARED nodes(numnodes, numnodes) AS Node
+DIM SHARED runningtotal AS INTEGER
+
+CLS
+DIM in AS DOUBLE
+DIM total AS DOUBLE
+count = 0
+
+OPEN "day1.txt" FOR INPUT AS #1
+WHILE NOT EOF(1)
+  count = count + 1
+  INPUT #1, in
+  numbers(count) = in
+  runningtotal = runningtotal + in
+WEND
+CLOSE #1
+
+PRINT runningtotal
+PRINT count
+
+runningtotal = 0
+found% = 0
+WHILE found% = 0
+  FOR i = 1 TO numnodes
+    runningtotal = runningtotal + numbers(i)
+    found% = CheckRepeat(runningtotal)
+    IF found% = 1 THEN EXIT FOR
+  NEXT i
+WEND
+
+FUNCTION CheckRepeat% (count):
+  PRINT count;
+  hash% = ABS(count MOD numnodes)
+  i% = 0
+  DO
+    i% = i% + 1
+    IF nodes(hash%, i%).nodeValue = count THEN
+      PRINT
+      PRINT count
+      PRINT "DONE!"
+      CheckRepeat = 1
+      END
+    END IF
+  LOOP WHILE nodes(hash%, i%).nodeCounter = 1
+  nodes(hash%, i%).nodeValue = count
+  nodes(hash%, i%).nodeCounter = nodes(hash%, i%).nodeCounter + 1
+  CheckRepeat = 0
+END FUNCTION
