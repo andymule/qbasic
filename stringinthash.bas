@@ -2,7 +2,7 @@
 ''''''''''''''''''' HEADER ''''''''''''
 ' how many of each type will we store
 CONST BUCKETSIZE = 127 'how many items per bucket , prime number
-CONST TABLESIZE = 1031 'how many buckets in the total hash list
+CONST TABLESIZE = 1031 'how many buckets in the total hash list, prime number
 'total hashable size would be BUCKETSIZE * TABLESIZE
 
 CONST IntegerLength = 2
@@ -12,7 +12,7 @@ CONST StringLength = 8
 CONST INTEGERARRAYLENGTH = IntegerLength * BUCKETSIZE
 CONST STRINGARRAYLENGTH = StringLength * BUCKETSIZE
 
-DEFSTR S 'variables starting with z are strings
+DEFSTR S 'variables starting with s are strings
 TYPE StringIntHashTable
   'dim for BUCKETSIZE amount of integers
   Values AS STRING * INTEGERARRAYLENGTH
@@ -22,7 +22,7 @@ TYPE StringIntHashTable
   Size AS INTEGER
 END TYPE
 REDIM SHARED table(1 TO TABLESIZE) AS StringIntHashTable
-'REDIM SHARED table(asd%) AS StringIntHashTable     dynamic? kind of
+'REDIM SHARED table(asd%) AS StringIntHashTable     dynamic? TODO i think it can be 
 ''''''''''''''''''' END HEADER'''''''''''''''''''''
 
 '''''''''''''' EXAMPLE CODE'''''''''''''
@@ -49,7 +49,7 @@ PRINT "overwritten value:"; returned4%
 FUNCTION HashPutInt% (sKey, Value%)
   IF LEN(sKey) > 8 THEN
     PRINT "ERROR! Can't key more than 8 chars"
-    RETURN
+    EXIT FUNCTION
   END IF
   hash = GetHash(sKey)
   FOR index = 1 TO table(hash).Size
