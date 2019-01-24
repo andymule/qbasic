@@ -467,7 +467,7 @@ SUB vwatch64_CONNECTTOHOST
         LOOP
     END IF
 
-    vwatch64_CLIENTFILE = 11079
+    vwatch64_CLIENTFILE = 8623
     OPEN vwatch64_FILENAME FOR BINARY AS vwatch64_CLIENTFILE
 
     'Check if a connection is already active

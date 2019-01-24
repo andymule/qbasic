@@ -1,4 +1,5 @@
 ' $DYNAMIC
+''''''''''''''''''' HEADER ''''''''''''
 ' how many of each type will we store
 CONST BUCKETSIZE = 127 'how many items per bucket , prime number
 CONST TABLESIZE = 1031 'how many buckets in the total hash list
@@ -20,53 +21,72 @@ TYPE StringIntHashTable
   'how many items in this dict
   Size AS INTEGER
 END TYPE
-'DECLARE FUNCTION Array$ (Dim2, Dim3, Value$)
 REDIM SHARED table(1 TO TABLESIZE) AS StringIntHashTable
-'asd% = 123
 'REDIM SHARED table(asd%) AS StringIntHashTable     dynamic? kind of
+''''''''''''''''''' END HEADER'''''''''''''''''''''
 
-test1% = 88
-test2% = 89
+'''''''''''''' EXAMPLE CODE'''''''''''''
+test1% = 33000
+test2% = 32000
 
 temp% = HashPutInt%("34", test1%)
-temp% = HashPutInt%("34", test2%)
-'NewInteger% = HashGetInt%("test1")
+temp% = HashPutInt%("35", test2%)
+temp% = HashPutInt%("36", 123)
+returned1% = HashGetInt%("34")
+returned2% = HashGetInt%("35")
+returned3% = HashGetInt%("36")
 'PRINT "   Stored:"; test1%
-'PRINT "Retrieved:"; NewInteger%
+PRINT "Retrieved:"; returned1%
+PRINT "Retrieved:"; returned2%
+PRINT "Retrieved:"; returned3%
+''''''''''''''''''' END EXAMPLE '''''''''''''''''''''
 
+
+''''''''''''' SUBS AND FUNCTIONS ''''''''''''''''''''
 FUNCTION HashPutInt% (sKey, Value%)
-  tempkey$ = "        "
-  FOR i = 1 TO 8
-    MID$(tempkey$, i, 1) = MID$(sKey, i, 1) 'SPACE$ 'rset
-  NEXT i
-  FOR i = 1 TO LEN(tempkey$)
-    hash = hash + ASC(tempkey$, i)
-  NEXT i
-  FOR i = 1 TO LEN(tempkey$) - 1
-    hash = hash + ASC(tempkey$, i) * ASC(tempkey$, i + 1)
-  NEXT i
-  hash = hash MOD TABLESIZE
+  IF LEN(sKey) > 8 THEN
+    PRINT "ERROR! Can't key more than 8 chars"
+    RETURN
+  END IF
+  hash = GetHash(sKey)
   FOR index = 1 TO table(hash).Size
-    Value$ = MID$(table(hash).Keys, table(hash).Size * StringLength + 1, StringLength)
-    PRINT tempkey$, LEN(tempkey$)
-    PRINT Value$, LEN(Value$)
-    IF MID$(Value$, 1, 8) = MID$(tempkey$, 1, 8) THEN
-      PRINT "FOUND DOUBLE VALUE AT:"; tempkey$; Value%
-      SLEEP 3
+    Value$ = MID$(table(hash).Keys, (index - 1) * StringLength + 1, LEN(sKey)) ' TODO bug on similar strings of diff size, eg. "asd3" and "asd" might return same
+    IF MID$(Value$, 1, 8) = MID$(sKey, 1, 8) THEN
+      PRINT "FOUND DOUBLE VALUE AT:"; sKey; Value% ' found so something?
+      'SLEEP 3
       END
     END IF
-    'if table(hash).
   NEXT index
   ' not already found, so add to list
+  ' TODO dynamic array duh cmon
+  IF table(hash).Size = BUCKETSIZE THEN
+    PRINT "ERROR! Bucket in hashtable full. Increase BUSKETSIZE or TABLESIZE, or decrease data."
+    END
+  END IF
+  MID$(table(hash).Values, table(hash).Size * 2 + 1, 8) = MKI$(Value%)
+  MID$(table(hash).Keys, table(hash).Size * StringLength + 1, StringLength) = MID$(sKey, 1, LEN(sKey))
   table(hash).Size = table(hash).Size + 1
-  MID$(table(hash).Values, table(hash).Size * 2 + 1, 2) = MKI$(Value%)
-  MID$(table(hash).Keys, table(hash).Size * StringLength + 1, StringLength) = MID$(tempkey$, 1, StringLength) 'trim to fit and save
-  PRINT MID$(tempkey$, 1, 8)
 END FUNCTION
 
 FUNCTION HashGetInt% (sKey)
-  'CASE IntegerArray
-  HashGetInt% = VAL(LTRIM$(STR$(CVI(MID$(table(1).Values, table(1).Size * 2 + 1, 2)))))
-  'CASE StringArray
-  Value$ = LTRIM$(MID$(table(1).Keys, table(1).Size * StringLength + 1, StringLength))
+  HashGetInt% = -666
+  hash = GetHash(sKey)
+  FOR index = 1 TO table(hash).Size
+    Value$ = MID$(table(hash).Keys, (index - 1) * StringLength + 1, LEN(sKey))
+    IF MID$(Value$, 1, 8) = MID$(sKey, 1, 8) THEN
+      HashGetInt% = VAL(STR$(CVI(MID$(table(hash).Values, (index - 1) * IntegerLength + 1, IntegerLength))))
+    END IF
+  NEXT index
 END FUNCTION
+
+
+FUNCTION GetHash% (key$)
+  FOR i = 1 TO LEN(key$)
+    hash = hash + ASC(key$, i)
+  NEXT i
+  FOR i = 1 TO LEN(key$) - 1
+    hash = hash + ASC(key$, i) * ASC(key$, i + 1)
+  NEXT i
+  GetHash% = hash MOD TABLESIZE
+END FUNCTION
+'''''''''''''''' END SUB AND FUNCTIONS '''''''''''''''
