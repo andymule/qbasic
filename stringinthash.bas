@@ -2,7 +2,7 @@
 ''''''''''''''''''' HEADER ''''''''''''
 ' how many of each type will we store
 CONST BUCKETSIZE = 127 'how many items per bucket , prime number
-CONST TABLESIZE = 1031 'how many buckets in the total hash list, prime number
+CONST TABLESIZE = 1031 'how many buckets in the total hash list
 'total hashable size would be BUCKETSIZE * TABLESIZE
 
 CONST IntegerLength = 2
@@ -12,7 +12,7 @@ CONST StringLength = 8
 CONST INTEGERARRAYLENGTH = IntegerLength * BUCKETSIZE
 CONST STRINGARRAYLENGTH = StringLength * BUCKETSIZE
 
-DEFSTR S 'variables starting with s are strings
+DEFSTR S 'variables starting with z are strings
 TYPE StringIntHashTable
   'dim for BUCKETSIZE amount of integers
   Values AS STRING * INTEGERARRAYLENGTH
@@ -22,7 +22,7 @@ TYPE StringIntHashTable
   Size AS INTEGER
 END TYPE
 REDIM SHARED table(1 TO TABLESIZE) AS StringIntHashTable
-'REDIM SHARED table(asd%) AS StringIntHashTable     dynamic? TODO i think it can be 
+'REDIM SHARED table(asd%) AS StringIntHashTable     dynamic? kind of
 ''''''''''''''''''' END HEADER'''''''''''''''''''''
 
 '''''''''''''' EXAMPLE CODE'''''''''''''
@@ -31,17 +31,20 @@ test2% = 32000 'big int
 
 temp% = HashPutInt%("34", test1%)
 temp% = HashPutInt%("35", test2%)
-temp% = HashPutInt%("36", 123) ' const int
+temp% = HashPutInt%("36", 123) ' to be overwritten
+temp% = HashPutInt%("StringsCantBeMoreThan8CharsATM", 555) ' doesn't store
 returned1% = HashGetInt%("34")
 returned2% = HashGetInt%("35")
-returned3% = HashGetInt%("36")
+returnedbad% = HashGetInt%("StringsCantBeMoreThan8CharsATM") ' returns -666 if not valid key
+returned3% = HashGetInt%("36") ' normal, but to be overwritten
 'PRINT "   Stored:"; test1%
-PRINT "Int overflow:"; returned1%
-PRINT "large int:"; returned2%
-PRINT "normal but then...:"; returned3%
+PRINT "Int overflow:", , returned1%
+PRINT "large int:", , returned2%
+PRINT "-666 is my error number:", returnedbad%
+PRINT "normal but then...:", returned3%
 returned4% = HashPutInt%("36", 6969) ' overwrite old value
 returned4% = HashGetInt%("36")
-PRINT "overwritten value:"; returned4%
+PRINT "gets overwritten:", returned4%
 ''''''''''''''''''' END EXAMPLE '''''''''''''''''''''
 
 
