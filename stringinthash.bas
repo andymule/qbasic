@@ -26,19 +26,22 @@ REDIM SHARED table(1 TO TABLESIZE) AS StringIntHashTable
 ''''''''''''''''''' END HEADER'''''''''''''''''''''
 
 '''''''''''''' EXAMPLE CODE'''''''''''''
-test1% = 33000
-test2% = 32000
+test1% = 33000 ' int overflow
+test2% = 32000 'big int
 
 temp% = HashPutInt%("34", test1%)
 temp% = HashPutInt%("35", test2%)
-temp% = HashPutInt%("36", 123)
+temp% = HashPutInt%("36", 123) ' const int
 returned1% = HashGetInt%("34")
 returned2% = HashGetInt%("35")
 returned3% = HashGetInt%("36")
 'PRINT "   Stored:"; test1%
-PRINT "Retrieved:"; returned1%
-PRINT "Retrieved:"; returned2%
-PRINT "Retrieved:"; returned3%
+PRINT "Int overflow:"; returned1%
+PRINT "large int:"; returned2%
+PRINT "normal but then...:"; returned3%
+returned4% = HashPutInt%("36", 6969) ' overwrite old value
+returned4% = HashGetInt%("36")
+PRINT "overwritten value:"; returned4%
 ''''''''''''''''''' END EXAMPLE '''''''''''''''''''''
 
 
@@ -52,9 +55,12 @@ FUNCTION HashPutInt% (sKey, Value%)
   FOR index = 1 TO table(hash).Size
     Value$ = MID$(table(hash).Keys, (index - 1) * StringLength + 1, LEN(sKey)) ' TODO bug on similar strings of diff size, eg. "asd3" and "asd" might return same
     IF MID$(Value$, 1, 8) = MID$(sKey, 1, 8) THEN
-      PRINT "FOUND DOUBLE VALUE AT:"; sKey; Value% ' found so something?
+      ' TODO think about what this should do
+      'PRINT "FOUND DOUBLE VALUE AT:"; sKey; Value% ' found so something?
       'SLEEP 3
-      END
+      'END
+      MID$(table(hash).Values, (index - 1) * 2 + 1, 8) = MKI$(Value%)
+      EXIT FUNCTION
     END IF
   NEXT index
   ' not already found, so add to list
